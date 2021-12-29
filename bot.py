@@ -26,29 +26,30 @@ headers = {
 
 client = discord.Client()
 
-price = 0
-volume = 0
-rank = 0
-def ExtractCoinMarketCap():
-    global price, volume, rank
-    while True:
-        try:
-            response = requests.get(
-                MM_CMC_URL,
-                params=MM_CMC_PARAMS,
-                headers=headers
-            )
-            data = json.loads(response.text)
-            price = data['data']['10866']['quote']['USD']['price']
-            volume = data['data']['10866']['quote']['USD']['volume_24h']
-            rank = data['data']['10866']['cmc_rank']
-        except (ConnectionError, Timeout, TooManyRedirects) as e:
-            print("ERROR:\n\t", e)
-        time.sleep(120)
 
 @client.event
 async def on_ready():
     ChangeChannelNames.start()
+    ExtractCoinMarketCap.start()
+
+price = 0
+volume = 0
+rank = 0
+@tasks.loop(seconds=120)
+async def ExtractCoinMarketCap():
+    global price, volume, rank
+    try:
+        response = requests.get(
+            MM_CMC_URL,
+            params=MM_CMC_PARAMS,
+            headers=headers
+        )
+        data = json.loads(response.text)
+        price = data['data']['10866']['quote']['USD']['price']
+        volume = data['data']['10866']['quote']['USD']['volume_24h']
+        rank = data['data']['10866']['cmc_rank']
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+        print("ERROR:\n\t", e)
 
 @tasks.loop(seconds=60)
 async def ChangeChannelNames():
@@ -76,7 +77,6 @@ async def on_message(message):
 
 if __name__ == "__main__":
     mode = sys.argv[1]
-    threading.Thread(target=ExtractCoinMarketCap).start()
     if mode == "prod":
         client.run(TOKEN)
     if mode == "test":
