@@ -7,8 +7,9 @@ import discord
 import requests
 import threading
 from dotenv import load_dotenv
-from discord.ext import tasks
+from discord.ext import tasks, commands
 
+# ENVIRONMENTAL VARIABLES
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 TOKEN_TEST = os.getenv('DISCORD_TOKEN_TEST')
@@ -19,35 +20,54 @@ CHANNEL_PRICE_ID = int(os.getenv('CHANNEL_PRICE_ID'))
 MM_CMC_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
 MM_CMC_PARAMS = {'slug':'million'}
 
-headers = {
-  'Accepts': 'application/json',
-  'X-CMC_PRO_API_KEY': COINMARKETCAP_TOKEN,
-}
+# GLOABL VARIABLES
+PRICE = 0
+volume = 0
+rank = 0
 
-client = discord.Client()
+client = commands.Bot(command_prefix = '!')
 
+@client.command()
+async def ping(ctx):
+    await ctx.send("PONG")
+    
+@client.command()
+async def price(ctx):
+    r_price = round(PRICE, 2)
+    s_price = str(r_price) + '$'
+    await ctx.send(s_price)
+
+@client.command()
+async def volume(ctx):
+    r_volume = round(VOLUME)
+    s_volume = f"${r_volume:,}"
+    await ctx.send(s_volume)
+
+@client.command()
+async def rank(ctx):
+    await ctx.send(RANK)
 
 @client.event
 async def on_ready():
     ChangeChannelNames.start()
     ExtractCoinMarketCap.start()
 
-price = 0
-volume = 0
-rank = 0
 @tasks.loop(seconds=120)
 async def ExtractCoinMarketCap():
-    global price, volume, rank
+    global PRICE, VOLUME, RANK
     try:
         response = requests.get(
             MM_CMC_URL,
             params=MM_CMC_PARAMS,
-            headers=headers
+            headers = {
+              'Accepts': 'application/json',
+              'X-CMC_PRO_API_KEY': COINMARKETCAP_TOKEN,
+            }
         )
         data = json.loads(response.text)
-        price = data['data']['10866']['quote']['USD']['price']
-        volume = data['data']['10866']['quote']['USD']['volume_24h']
-        rank = data['data']['10866']['cmc_rank']
+        PRICE = data['data']['10866']['quote']['USD']['price']
+        VOLUME = data['data']['10866']['quote']['USD']['volume_24h']
+        RANK = data['data']['10866']['cmc_rank']
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         print("ERROR:\n\t", e)
 
@@ -59,21 +79,8 @@ async def ChangeChannelNames():
     output_member = member_count + ' members'
     await channel_member.edit(name=output_member)
     channel_price = client.get_channel(CHANNEL_PRICE_ID)
-    s_price = str(int(price)) + ' usd'
+    s_price = str(int(PRICE)) + ' usd'
     await channel_price.edit(name=s_price)
-
-@client.event
-async def on_message(message):
-    if message.content.startswith('!price'):
-        r_price = round(price, 2)
-        s_price = str(r_price) + '$'
-        await message.reply(s_price, mention_author=True)
-    if message.content.startswith('!volume'):
-        r_volume = round(volume)
-        s_volume = f"${r_volume:,}"
-        await message.reply(s_volume, mention_author=True)
-    if message.content.startswith('!rank'):
-        await message.reply(rank, mention_author=True)
 
 if __name__ == "__main__":
     mode = sys.argv[1]
