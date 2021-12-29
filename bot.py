@@ -45,18 +45,18 @@ def ExtractCoinMarketCap():
             print("ERROR:\n\t", e)
         time.sleep(120)
 
-@client.event
-async def on_ready():
-    while True:
-        guild = client.get_guild(GUILD_ID)
-        member_count = str(guild.member_count)
-        channel_member = client.get_channel(CHANNEL_MEMBER_ID)
-        output_member = member_count + ' members'
-        await channel_member.edit(name=output_member)
-        channel_price = client.get_channel(CHANNEL_PRICE_ID)
-        s_price = str(int(price)) + ' usd'
-        await channel_price.edit(name=s_price)
-        time.sleep(60)
+# @client.event
+# async def on_ready():
+#     while True:
+#         guild = client.get_guild(GUILD_ID)
+#         member_count = str(guild.member_count)
+#         channel_member = client.get_channel(CHANNEL_MEMBER_ID)
+#         output_member = member_count + ' members'
+#         await channel_member.edit(name=output_member)
+#         channel_price = client.get_channel(CHANNEL_PRICE_ID)
+#         s_price = str(int(price)) + ' usd'
+#         await channel_price.edit(name=s_price)
+#         time.sleep(60)
 
 @client.event
 async def on_message(message):
