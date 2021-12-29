@@ -12,6 +12,9 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 TOKEN_TEST = os.getenv('DISCORD_TOKEN_TEST')
 COINMARKETCAP_TOKEN = os.getenv('COINMARKETCAP_TOKEN')
+GUILD_ID = int(os.getenv('GUILD_ID'))
+CHANNEL_MEMBER_ID = int(os.getenv('CHANNEL_MEMBER_ID'))
+CHANNEL_PRICE_ID = int(os.getenv('CHANNEL_PRICE_ID'))
 MM_CMC_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
 MM_CMC_PARAMS = {'slug':'million'}
 
@@ -41,6 +44,19 @@ def ExtractCoinMarketCap():
         except (ConnectionError, Timeout, TooManyRedirects) as e:
             print("ERROR:\n\t", e)
         time.sleep(120)
+
+@client.event
+async def on_ready():
+    while True:
+        guild = client.get_guild(GUILD_ID)
+        member_count = str(guild.member_count)
+        channel_member = client.get_channel(CHANNEL_MEMBER_ID)
+        output_member = member_count + ' members'
+        await channel_member.edit(name=output_member)
+        channel_price = client.get_channel(CHANNEL_PRICE_ID)
+        s_price = str(int(price)) + ' usd'
+        await channel_price.edit(name=s_price)
+        time.sleep(60)
 
 @client.event
 async def on_message(message):
