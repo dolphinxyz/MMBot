@@ -4,6 +4,7 @@ import sys
 import time
 import json
 import discord
+import datetime
 import requests
 import threading
 from dotenv import load_dotenv
@@ -17,6 +18,7 @@ COINMARKETCAP_TOKEN = os.getenv('COINMARKETCAP_TOKEN')
 GUILD_ID = int(os.getenv('GUILD_ID'))
 CHANNEL_MEMBER_ID = int(os.getenv('CHANNEL_MEMBER_ID'))
 CHANNEL_PRICE_ID = int(os.getenv('CHANNEL_PRICE_ID'))
+CHANNEL_DAYS_ID = int(os.getenv('CHANNEL_DAYS_ID'))
 MM_CMC_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
 MM_CMC_PARAMS = {'slug':'million'}
 
@@ -49,7 +51,9 @@ async def rank(ctx):
 
 @client.event
 async def on_ready():
-    ChangeChannelNames.start()
+    ChangeChannelNameMembers.start()
+    ChangeChannelNamePrice.start()
+    ChangeChannelNameDays.start()
     ExtractCoinMarketCap.start()
 
 @tasks.loop(seconds=120)
@@ -72,15 +76,27 @@ async def ExtractCoinMarketCap():
         print("ERROR:\n\t", e)
 
 @tasks.loop(seconds=60)
-async def ChangeChannelNames():
+async def ChangeChannelNameMembers():
     guild = client.get_guild(GUILD_ID)
     member_count = str(guild.member_count)
     channel_member = client.get_channel(CHANNEL_MEMBER_ID)
     output_member = member_count + ' members'
     await channel_member.edit(name=output_member)
+
+@tasks.loop(seconds=60)
+async def ChangeChannelNamePrice():
     channel_price = client.get_channel(CHANNEL_PRICE_ID)
     s_price = str(int(PRICE)) + ' usd'
     await channel_price.edit(name=s_price)
+
+@tasks.loop(seconds=86400)
+async def ChangeChannelNameDays():
+    channel_days = client.get_channel(CHANNEL_DAYS_ID)
+    today = datetime.date.today()
+    genesis = datetime.date(2021, 7, 1)
+    delta_days = today - genesis
+    s_days = str(delta_days.days) + ' days'
+    await channel_days.edit(name=s_days)
 
 if __name__ == "__main__":
     mode = sys.argv[1]
