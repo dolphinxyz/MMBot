@@ -7,6 +7,7 @@ import discord
 import requests
 import threading
 from dotenv import load_dotenv
+from discord.ext import tasks
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -45,18 +46,20 @@ def ExtractCoinMarketCap():
             print("ERROR:\n\t", e)
         time.sleep(120)
 
-# @client.event
-# async def on_ready():
-#     while True:
-#         guild = client.get_guild(GUILD_ID)
-#         member_count = str(guild.member_count)
-#         channel_member = client.get_channel(CHANNEL_MEMBER_ID)
-#         output_member = member_count + ' members'
-#         await channel_member.edit(name=output_member)
-#         channel_price = client.get_channel(CHANNEL_PRICE_ID)
-#         s_price = str(int(price)) + ' usd'
-#         await channel_price.edit(name=s_price)
-#         time.sleep(60)
+@client.event
+async def on_ready():
+    ChangeChannelNames.start()
+
+@tasks.loop(seconds=60)
+async def ChangeChannelNames():
+    guild = client.get_guild(GUILD_ID)
+    member_count = str(guild.member_count)
+    channel_member = client.get_channel(CHANNEL_MEMBER_ID)
+    output_member = member_count + ' members'
+    await channel_member.edit(name=output_member)
+    channel_price = client.get_channel(CHANNEL_PRICE_ID)
+    s_price = str(int(price)) + ' usd'
+    await channel_price.edit(name=s_price)
 
 @client.event
 async def on_message(message):
