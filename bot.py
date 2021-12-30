@@ -20,7 +20,9 @@ CHANNEL_MEMBER_ID = int(os.getenv('CHANNEL_MEMBER_ID'))
 CHANNEL_PRICE_ID = int(os.getenv('CHANNEL_PRICE_ID'))
 CHANNEL_DAYS_ID = int(os.getenv('CHANNEL_DAYS_ID'))
 CHANNEL_ONLINE_ID = int(os.getenv('CHANNEL_ONLINE_ID'))
+CHANNEL_ETH_HOLDERS = int(os.getenv('CHANNEL_ETH_HOLDERS'))
 MM_CMC_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+ETH_HOLDERS_URL = 'https://ethplorer.io/service/service.php?data=0x6b4c7a5e3f0b99fcd83e9c089bddd6c7fce5c611'
 MM_CMC_PARAMS = {'slug':'million'}
 
 # GLOABL VARIABLES
@@ -57,6 +59,7 @@ async def on_ready():
     ChangeChannelNameDays.start()
     UpdateOnlineUserCounter.start()
     ExtractCoinMarketCap.start()
+    ExtractEthereumHolders.start()
 
 @tasks.loop(seconds=120)
 async def ExtractCoinMarketCap():
@@ -75,6 +78,19 @@ async def ExtractCoinMarketCap():
         VOLUME = data['data']['10866']['quote']['USD']['volume_24h']
         RANK = data['data']['10866']['cmc_rank']
     except (ConnectionError, Timeout, TooManyRedirects) as e:
+        print("ERROR:\n\t", e)
+
+@tasks.loop(seconds=120)
+async def ExtractEthereumHolders():
+    global ETH_HOLDERS
+    try:
+        response = requests.get(ETH_HOLDERS_URL)
+        data = json.loads(response.text)
+        ETH_HOLDERS = data['token']['holdersCount']
+        channel_eht_holders = client.get_channel(CHANNEL_ETH_HOLDERS)
+        output_eth_holders = str(ETH_HOLDERS) + ' eth-holders'
+        await channel_eht_holders.edit(name=output_eth_holders)
+    except Exception as e:
         print("ERROR:\n\t", e)
 
 @tasks.loop(seconds=60)
