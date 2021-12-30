@@ -19,6 +19,7 @@ GUILD_ID = int(os.getenv('GUILD_ID'))
 CHANNEL_MEMBER_ID = int(os.getenv('CHANNEL_MEMBER_ID'))
 CHANNEL_PRICE_ID = int(os.getenv('CHANNEL_PRICE_ID'))
 CHANNEL_DAYS_ID = int(os.getenv('CHANNEL_DAYS_ID'))
+CHANNEL_ONLINE_ID = int(os.getenv('CHANNEL_ONLINE_ID'))
 MM_CMC_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
 MM_CMC_PARAMS = {'slug':'million'}
 
@@ -54,6 +55,7 @@ async def on_ready():
     ChangeChannelNameMembers.start()
     ChangeChannelNamePrice.start()
     ChangeChannelNameDays.start()
+    UpdateOnlineUserCounter.start()
     ExtractCoinMarketCap.start()
 
 @tasks.loop(seconds=120)
@@ -97,6 +99,18 @@ async def ChangeChannelNameDays():
     delta_days = today - genesis
     s_days = str(delta_days.days) + ' days'
     await channel_days.edit(name=s_days)
+
+@tasks.loop(seconds=60)
+async def UpdateOnlineUserCounter():
+    channel_online = client.get_channel(CHANNEL_ONLINE_ID)
+    members = client.get_all_members()
+    count_online = 0
+    for member in members:
+        if str(member.status) != "offline":
+            if not member.bot:
+                count_online = count_online + 1
+    s_online = str(count_online) + ' online'
+    await channel_online.edit(name=s_online)
 
 if __name__ == "__main__":
     mode = sys.argv[1]
