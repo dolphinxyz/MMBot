@@ -28,12 +28,12 @@ PRICE = 0
 volume = 0
 rank = 0
 
-client = commands.Bot(command_prefix = '!')
+intents = discord.Intents.all()
+client = commands.Bot(
+    command_prefix = '!', 
+    intents=intents
+)
 
-@client.command()
-async def ping(ctx):
-    await ctx.send("PONG")
-    
 @client.command()
 async def price(ctx):
     r_price = round(PRICE, 2)
