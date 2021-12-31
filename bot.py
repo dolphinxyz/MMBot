@@ -31,6 +31,8 @@ CHANNEL_HOLDERS_AVALANCHE = int(os.getenv('CHANNEL_HOLDERS_AVALANCHE'))
 CHANNEL_HOLDERS_BINANCE = int(os.getenv('CHANNEL_HOLDERS_BINANCE'))
 CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
 CHANNEL_HOLDERS_TOTAL_YESTERDAY = int(os.getenv('CHANNEL_HOLDERS_TOTAL_YESTERDAY'))
+CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
+CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
 
 COVALENT_DICT = [
     {
@@ -88,6 +90,27 @@ client = commands.Bot(
     intents=intents
 )
 
+@client.event
+async def on_ready():
+    ChangeChannelNameMembers.start()
+    ChangeChannelNamePrice.start()
+    ChangeChannelNameDays.start()
+    UpdateOnlineUserCounter.start()
+    ExtractCoinMarketCap.start()
+    ExtractHolders.start()
+    UpdateHolders.start()
+    UpdateHoldersTotal.start()
+
+@client.event
+async def on_member_join(member):
+   await client.get_channel(CHANNEL_WELCOME).send(
+        f"Ehy {member.name} welcome on Million Token!")
+
+@client.event
+async def on_member_remove(member):
+   await client.get_channel(CHANNEL_GOODBYE).send(
+        f"{member.name} has left")
+
 @client.command()
 async def price(ctx):
     r_price = round(PRICE, 2)
@@ -103,17 +126,6 @@ async def volume(ctx):
 @client.command()
 async def rank(ctx):
     await ctx.send(RANK)
-
-@client.event
-async def on_ready():
-    ChangeChannelNameMembers.start()
-    ChangeChannelNamePrice.start()
-    ChangeChannelNameDays.start()
-    UpdateOnlineUserCounter.start()
-    ExtractCoinMarketCap.start()
-    ExtractHolders.start()
-    UpdateHolders.start()
-    UpdateHoldersTotal.start()
 
 @tasks.loop(seconds=120)
 async def ExtractCoinMarketCap():
