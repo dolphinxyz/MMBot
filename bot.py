@@ -30,6 +30,7 @@ CHANNEL_HOLDERS_KUSAMA = int(os.getenv('CHANNEL_HOLDERS_KUSAMA'))
 CHANNEL_HOLDERS_AVALANCHE = int(os.getenv('CHANNEL_HOLDERS_AVALANCHE'))
 CHANNEL_HOLDERS_BINANCE = int(os.getenv('CHANNEL_HOLDERS_BINANCE'))
 CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
+CHANNEL_HOLDERS_TOTAL_YESTERDAY = int(os.getenv('CHANNEL_HOLDERS_TOTAL_YESTERDAY'))
 
 COVALENT_DICT = [
     {
@@ -79,6 +80,7 @@ HOLDERS_MATIC = 0
 HOLDERS_AVAX = 0
 HOLDERS_KSM = 0
 HOLDERS_TOTAL = 0
+HOLDERS_TOTAL_YESTERDAY = 0
 
 intents = discord.Intents.all()
 client = commands.Bot(
@@ -129,7 +131,7 @@ async def ExtractCoinMarketCap():
         PRICE = data['data']['10866']['quote']['USD']['price']
         VOLUME = data['data']['10866']['quote']['USD']['volume_24h']
         RANK = data['data']['10866']['cmc_rank']
-    except (ConnectionError, Timeout, TooManyRedirects) as e:
+    except Exception as e:
         print("ERROR ExtractCoinMarketCap:\n\t", e)
 
 @tasks.loop(seconds=120)
@@ -164,6 +166,15 @@ async def UpdateHoldersTotal():
         total = total + i['holders']
     output = str(total) + ' total'
     channel = client.get_channel(CHANNEL_HOLDERS_TOTAL)
+    await channel.edit(name=output)
+
+@tasks.loop(seconds=86400)
+async def UpdateHoldersTotalYesterday():
+    total = 0
+    for i in COVALENT_DICT:
+        total = total + i['holders']
+    output = str(total) + ' total yesterday'
+    channel = client.get_channel(CHANNEL_HOLDERS_TOTAL_YESTERDAY)
     await channel.edit(name=output)
 
 @tasks.loop(seconds=60)
