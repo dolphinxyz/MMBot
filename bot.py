@@ -6,7 +6,6 @@ import json
 import discord
 import datetime
 import requests
-import threading
 from dotenv import load_dotenv
 from discord.ext import tasks, commands
 
@@ -253,18 +252,6 @@ async def UpdateOnlineUserCounter():
                 count_online = count_online + 1
     s_online = str(count_online) + ' online millionaire'
     await channel_online.edit(name=s_online)
-
-@client.event
-async def on_message(message):
-    for i in EMOJIS_DICT:
-        for key in i['keywords']:
-            if key in message.content:
-                for emoji in i['ids']:
-                    if i['custom']:
-                        reaction = client.get_emoji(emoji)
-                        await message.add_reaction(reaction)
-                    else:
-                        await message.add_reaction(emoji)
 
 if __name__ == "__main__":
     mode = sys.argv[1]
