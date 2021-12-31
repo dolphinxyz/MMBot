@@ -172,7 +172,7 @@ async def ChangeChannelNameMembers():
     guild = client.get_guild(GUILD_ID)
     member_count = str(guild.member_count)
     channel_member = client.get_channel(CHANNEL_MEMBER_ID)
-    output_member = member_count + ' online millionaire'
+    output_member = member_count + ' total millionaire'
     await channel_member.edit(name=output_member)
 
 @tasks.loop(seconds=60)
@@ -199,7 +199,7 @@ async def UpdateOnlineUserCounter():
         if str(member.status) != "offline":
             if not member.bot:
                 count_online = count_online + 1
-    s_online = str(count_online) + ' online'
+    s_online = str(count_online) + ' online millionaire'
     await channel_online.edit(name=s_online)
 
 if __name__ == "__main__":
