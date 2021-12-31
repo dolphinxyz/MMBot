@@ -109,7 +109,6 @@ async def on_ready():
     ChangeChannelNameDays.start()
     UpdateOnlineUserCounter.start()
     ExtractCoinMarketCap.start()
-    ExtractEthereumHolders.start()
     ExtractHolders.start()
     UpdateHolders.start()
     UpdateHoldersTotal.start()
