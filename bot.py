@@ -20,15 +20,65 @@ CHANNEL_MEMBER_ID = int(os.getenv('CHANNEL_MEMBER_ID'))
 CHANNEL_PRICE_ID = int(os.getenv('CHANNEL_PRICE_ID'))
 CHANNEL_DAYS_ID = int(os.getenv('CHANNEL_DAYS_ID'))
 CHANNEL_ONLINE_ID = int(os.getenv('CHANNEL_ONLINE_ID'))
-CHANNEL_ETH_HOLDERS = int(os.getenv('CHANNEL_ETH_HOLDERS'))
 MM_CMC_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
-ETH_HOLDERS_URL = 'https://ethplorer.io/service/service.php?data=0x6b4c7a5e3f0b99fcd83e9c089bddd6c7fce5c611'
 MM_CMC_PARAMS = {'slug':'million'}
+COVALENT_URL = os.getenv('COVALENT_URL')
+COVALENT_API_TOKEN = os.getenv('COVALENT_API_TOKEN')
+CHANNEL_HOLDERS_ETHEREUM = int(os.getenv('CHANNEL_HOLDERS_ETHEREUM'))
+CHANNEL_HOLDERS_POLYGON = int(os.getenv('CHANNEL_HOLDERS_POLYGON'))
+CHANNEL_HOLDERS_KUSAMA = int(os.getenv('CHANNEL_HOLDERS_KUSAMA'))
+CHANNEL_HOLDERS_AVALANCHE = int(os.getenv('CHANNEL_HOLDERS_AVALANCHE'))
+CHANNEL_HOLDERS_BINANCE = int(os.getenv('CHANNEL_HOLDERS_BINANCE'))
+CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
+
+COVALENT_DICT = [
+    {
+        "chain": "ethereum",
+        "chainid": 1,
+        "contract": '0x6b4c7a5e3f0b99fcd83e9c089bddd6c7fce5c611',
+        "holders": 0,
+        "channelid": CHANNEL_HOLDERS_ETHEREUM
+    },
+    {
+        "chain": "polygon",
+        "chainid": 137,
+        "contract": '0x5647fe4281f8f6f01e84bce775ad4b828a7b8927',
+        "holders": 0,
+        "channelid": CHANNEL_HOLDERS_POLYGON
+    },
+    {
+        "chain": "binance",
+        "chainid": 56,
+        "contract": '0xbf05279f9bf1ce69bbfed670813b7e431142afa4',
+        "holders": 0,
+        "channelid": CHANNEL_HOLDERS_BINANCE
+    },
+    {
+        "chain": "avalance",
+        "chainid": 43114,
+        "contract": '0x993163CaD35162fB579D7B64e6695cB076EF5064',
+        "holders": 0,
+        "channelid": CHANNEL_HOLDERS_AVALANCHE
+    },
+    {
+        "chain": "kusama",
+        "chainid": 1285,
+        "contract": '0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605',
+        "holders": 0,
+        "channelid": CHANNEL_HOLDERS_KUSAMA
+    },
+]
 
 # GLOABL VARIABLES
 PRICE = 0
-volume = 0
-rank = 0
+VOLUME = 0
+RANK = 0
+HOLDERS_ETH = 0
+HOLDERS_BSC = 0
+HOLDERS_MATIC = 0
+HOLDERS_AVAX = 0
+HOLDERS_KSM = 0
+HOLDERS_TOTAL = 0
 
 intents = discord.Intents.all()
 client = commands.Bot(
@@ -60,6 +110,9 @@ async def on_ready():
     UpdateOnlineUserCounter.start()
     ExtractCoinMarketCap.start()
     ExtractEthereumHolders.start()
+    ExtractHolders.start()
+    UpdateHolders.start()
+    UpdateHoldersTotal.start()
 
 @tasks.loop(seconds=120)
 async def ExtractCoinMarketCap():
@@ -78,33 +131,54 @@ async def ExtractCoinMarketCap():
         VOLUME = data['data']['10866']['quote']['USD']['volume_24h']
         RANK = data['data']['10866']['cmc_rank']
     except (ConnectionError, Timeout, TooManyRedirects) as e:
-        print("ERROR:\n\t", e)
+        print("ERROR ExtractCoinMarketCap:\n\t", e)
 
 @tasks.loop(seconds=120)
-async def ExtractEthereumHolders():
-    global ETH_HOLDERS
-    try:
-        response = requests.get(ETH_HOLDERS_URL)
-        data = json.loads(response.text)
-        ETH_HOLDERS = data['token']['holdersCount']
-        channel_eht_holders = client.get_channel(CHANNEL_ETH_HOLDERS)
-        output_eth_holders = str(ETH_HOLDERS) + ' eth-holders'
-        await channel_eht_holders.edit(name=output_eth_holders)
-    except Exception as e:
-        print("ERROR:\n\t", e)
+async def ExtractHolders():
+    for i in COVALENT_DICT:
+        try:
+            temp_chain = i['chainid']
+            temp_contract = i['contract']
+            temp_url = COVALENT_URL.format(
+                chain=temp_chain,
+                contract=temp_contract,
+                pageSize = 100000,
+                covalentkey = COVALENT_API_TOKEN
+            )
+            response = requests.get(temp_url)
+            data = json.loads(response.text)
+            i['holders'] = len(data['data']['items'])
+        except Exception as e:
+            print("ERROR ExtractHolders:\n\t", i['chain'], e)
+
+@tasks.loop(seconds=120)
+async def UpdateHolders():
+    for i in COVALENT_DICT:
+        channel = client.get_channel(i['channelid'])
+        output = str(i['holders']) + ' ' + i['chain']
+        await channel.edit(name=output)
+
+@tasks.loop(seconds=120)
+async def UpdateHoldersTotal():
+    total = 0
+    for i in COVALENT_DICT:
+        total = total + i['holders']
+    output = str(total) + ' total millionaire'
+    channel = client.get_channel(CHANNEL_HOLDERS_TOTAL)
+    await channel.edit(name=output)
 
 @tasks.loop(seconds=60)
 async def ChangeChannelNameMembers():
     guild = client.get_guild(GUILD_ID)
     member_count = str(guild.member_count)
     channel_member = client.get_channel(CHANNEL_MEMBER_ID)
-    output_member = member_count + ' members'
+    output_member = member_count + ' online millionaire'
     await channel_member.edit(name=output_member)
 
 @tasks.loop(seconds=60)
 async def ChangeChannelNamePrice():
     channel_price = client.get_channel(CHANNEL_PRICE_ID)
-    s_price = str(int(PRICE)) + ' usd'
+    s_price = str(int(PRICE)) + ' price usd'
     await channel_price.edit(name=s_price)
 
 @tasks.loop(seconds=86400)
@@ -113,7 +187,7 @@ async def ChangeChannelNameDays():
     today = datetime.date.today()
     genesis = datetime.date(2021, 7, 1)
     delta_days = today - genesis
-    s_days = str(delta_days.days) + ' days'
+    s_days = str(delta_days.days) + ' days since genesis'
     await channel_days.edit(name=s_days)
 
 @tasks.loop(seconds=60)
@@ -134,4 +208,3 @@ if __name__ == "__main__":
         client.run(TOKEN)
     if mode == "test":
         client.run(TOKEN_TEST)
-
