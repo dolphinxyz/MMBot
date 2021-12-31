@@ -162,7 +162,7 @@ async def UpdateHoldersTotal():
     total = 0
     for i in COVALENT_DICT:
         total = total + i['holders']
-    output = str(total) + ' total millionaire'
+    output = str(total) + ' total'
     channel = client.get_channel(CHANNEL_HOLDERS_TOTAL)
     await channel.edit(name=output)
 
