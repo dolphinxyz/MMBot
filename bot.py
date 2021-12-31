@@ -254,12 +254,6 @@ async def UpdateOnlineUserCounter():
     s_online = str(count_online) + ' online millionaire'
     await channel_online.edit(name=s_online)
 
-
-@client.event
-async def on_ready():
-    for emoji in client.emojis:
-        print("Name:", emoji.name + ",", "ID:", emoji.id)
-
 @client.event
 async def on_message(message):
     for i in EMOJIS_DICT:
