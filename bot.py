@@ -33,6 +33,8 @@ CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
 CHANNEL_HOLDERS_TOTAL_YESTERDAY = int(os.getenv('CHANNEL_HOLDERS_TOTAL_YESTERDAY'))
 CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
 CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
+TL_EMOJIS = json.loads(os.getenv('TL_EMOJIS'))
+MM_EMOJIS = json.loads(os.getenv('MM_EMOJIS'))
 
 COVALENT_DICT = [
     {
@@ -70,6 +72,34 @@ COVALENT_DICT = [
         "holders": 0,
         "channelid": CHANNEL_HOLDERS_KUSAMA
     },
+]
+
+
+EMOJIS_DICT = [
+    {
+        "category": "techlead",
+        "custom": True, 
+        "keywords": [' TL', 'TL ', 'tl ', 'techlead', 'patrik'],
+        "ids": TL_EMOJIS
+    },
+    {
+        "category": "million",
+        "custom": True,
+        "keywords": ['million', ' MM', 'MM ', 'mm ', ' mm'],
+        "ids": MM_EMOJIS
+    },
+    {
+        "category": "lfg",
+        "custom": False,
+        "keywords": ['lfg', 'LFG'],
+        "ids": ['🇱', '🇫', '🇬']
+    },
+    {
+        "category": "moon",
+        "custom": False,
+        "keywords": ['moon'],
+        "ids": ['🇲', '🇴', '🅾️', '🇳', '🌝'],
+    }
 ]
 
 # GLOABL VARIABLES
@@ -223,6 +253,24 @@ async def UpdateOnlineUserCounter():
                 count_online = count_online + 1
     s_online = str(count_online) + ' online millionaire'
     await channel_online.edit(name=s_online)
+
+
+@client.event
+async def on_ready():
+    for emoji in client.emojis:
+        print("Name:", emoji.name + ",", "ID:", emoji.id)
+
+@client.event
+async def on_message(message):
+    for i in EMOJIS_DICT:
+        for key in i['keywords']:
+            if key in message.content:
+                for emoji in i['ids']:
+                    if i['custom']:
+                        reaction = client.get_emoji(emoji)
+                        await message.add_reaction(reaction)
+                    else:
+                        await message.add_reaction(emoji)
 
 if __name__ == "__main__":
     mode = sys.argv[1]
