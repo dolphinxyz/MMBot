@@ -29,7 +29,6 @@ CHANNEL_HOLDERS_KUSAMA = int(os.getenv('CHANNEL_HOLDERS_KUSAMA'))
 CHANNEL_HOLDERS_AVALANCHE = int(os.getenv('CHANNEL_HOLDERS_AVALANCHE'))
 CHANNEL_HOLDERS_BINANCE = int(os.getenv('CHANNEL_HOLDERS_BINANCE'))
 CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
-CHANNEL_HOLDERS_TOTAL_YESTERDAY = int(os.getenv('CHANNEL_HOLDERS_TOTAL_YESTERDAY'))
 CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
 CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
 TL_EMOJIS = json.loads(os.getenv('TL_EMOJIS'))
@@ -111,7 +110,6 @@ HOLDERS_MATIC = 0
 HOLDERS_AVAX = 0
 HOLDERS_KSM = 0
 HOLDERS_TOTAL = 0
-HOLDERS_TOTAL_YESTERDAY = 0
 
 intents = discord.Intents.all()
 client = commands.Bot(
@@ -205,18 +203,9 @@ async def UpdateHoldersTotal():
     total = 0
     for i in COVALENT_DICT:
         total = total + i['holders']
-    output = str(total) + ' total'
-    channel = client.get_channel(CHANNEL_HOLDERS_TOTAL)
-    await channel.edit(name=output)
-
-@tasks.loop(seconds=86400)
-async def UpdateHoldersTotalYesterday():
-    total = 0
-    for i in COVALENT_DICT:
-        total = total + i['holders']
-    output = str(total) + ' total yesterday'
-    channel = client.get_channel(CHANNEL_HOLDERS_TOTAL_YESTERDAY)
-    await channel.edit(name=output)
+    channel_total = client.get_channel(CHANNEL_HOLDERS_TOTAL)
+    output_total = str(total) + ' total'
+    await channel_total.edit(name=output_total)
 
 @tasks.loop(seconds=60)
 async def ChangeChannelNameMembers():
