@@ -154,7 +154,7 @@ async def volume(ctx):
 async def rank(ctx):
     await ctx.send(RANK)
 
-@tasks.loop(seconds=120)
+@tasks.loop(seconds=240)
 async def ExtractCoinMarketCap():
     global PRICE, VOLUME, RANK
     try:
