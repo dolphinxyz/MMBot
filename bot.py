@@ -214,13 +214,13 @@ async def ChangeChannelNameMembers():
     guild = client.get_guild(GUILD_ID)
     member_count = str(guild.member_count)
     channel_member = client.get_channel(CHANNEL_MEMBER_ID)
-    output_member = member_count + ' total millionaire'
+    output_member = member_count + ' TOTAL MILLIONAIRE'
     await channel_member.edit(name=output_member)
 
 @tasks.loop(seconds=60)
 async def ChangeChannelNamePrice():
     channel_price = client.get_channel(CHANNEL_PRICE_ID)
-    s_price = str(int(PRICE)) + ' price usd'
+    s_price = str(int(PRICE)) + ' $'
     await channel_price.edit(name=s_price)
 
 @tasks.loop(seconds=86400)
@@ -229,7 +229,7 @@ async def ChangeChannelNameDays():
     today = datetime.date.today()
     genesis = datetime.date(2021, 7, 1)
     delta_days = today - genesis
-    s_days = str(delta_days.days) + ' days since genesis'
+    s_days = str(delta_days.days) + ' DAYS SINCE GENESIS'
     await channel_days.edit(name=s_days)
 
 @tasks.loop(seconds=60)
@@ -241,7 +241,7 @@ async def UpdateOnlineUserCounter():
         if str(member.status) != "offline":
             if not member.bot:
                 count_online = count_online + 1
-    s_online = str(count_online) + ' online millionaire'
+    s_online = str(count_online) + ' ONLINE MILLIONAIRE'
     await channel_online.edit(name=s_online)
     channel_test = client.get_channel(CHANNEL_TEST)
     await channel_test.edit(name=s_online)
