@@ -34,6 +34,8 @@ CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
 TL_EMOJIS = json.loads(os.getenv('TL_EMOJIS'))
 MM_EMOJIS = json.loads(os.getenv('MM_EMOJIS'))
 
+CHANNEL_TEST = int(os.getenv('CHANNEL_TEST'))
+
 COVALENT_DICT = [
     {
         "chain": "ethereum",
@@ -241,6 +243,8 @@ async def UpdateOnlineUserCounter():
                 count_online = count_online + 1
     s_online = str(count_online) + ' online millionaire'
     await channel_online.edit(name=s_online)
+    channel_test = client.get_channel(CHANNEL_TEST)
+    await channel_test.edit(name=s_online)
 
 if __name__ == "__main__":
     mode = sys.argv[1]
