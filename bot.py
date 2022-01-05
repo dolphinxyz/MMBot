@@ -36,35 +36,35 @@ MM_EMOJIS = json.loads(os.getenv('MM_EMOJIS'))
 
 COVALENT_DICT = [
     {
-        "chain": "ethereum",
+        "chain": "ETH",
         "chainid": 1,
         "contract": '0x6b4c7a5e3f0b99fcd83e9c089bddd6c7fce5c611',
         "holders": 0,
         "channelid": CHANNEL_HOLDERS_ETHEREUM
     },
     {
-        "chain": "polygon",
+        "chain": "MATIC",
         "chainid": 137,
         "contract": '0x5647fe4281f8f6f01e84bce775ad4b828a7b8927',
         "holders": 0,
         "channelid": CHANNEL_HOLDERS_POLYGON
     },
     {
-        "chain": "binance",
+        "chain": "BSC",
         "chainid": 56,
         "contract": '0xbf05279f9bf1ce69bbfed670813b7e431142afa4',
         "holders": 0,
         "channelid": CHANNEL_HOLDERS_BINANCE
     },
     {
-        "chain": "avalance",
+        "chain": "AVAX",
         "chainid": 43114,
         "contract": '0x993163CaD35162fB579D7B64e6695cB076EF5064',
         "holders": 0,
         "channelid": CHANNEL_HOLDERS_AVALANCHE
     },
     {
-        "chain": "kusama",
+        "chain": "KSM",
         "chainid": 1285,
         "contract": '0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605',
         "holders": 0,
@@ -204,7 +204,7 @@ async def UpdateHoldersTotal():
     for i in COVALENT_DICT:
         total = total + i['holders']
     channel_total = client.get_channel(CHANNEL_HOLDERS_TOTAL)
-    output_total = str(total) + ' total'
+    output_total = str(total)
     await channel_total.edit(name=output_total)
 
 @tasks.loop(seconds=60)
