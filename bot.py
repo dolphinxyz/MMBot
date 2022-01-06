@@ -103,7 +103,6 @@ EMOJIS_DICT = [
 # GLOABL VARIABLES
 PRICE = 0
 VOLUME = 0
-RANK = 0
 HOLDERS_ETH = 0
 HOLDERS_BSC = 0
 HOLDERS_MATIC = 0
@@ -150,13 +149,9 @@ async def volume(ctx):
     s_volume = f"${r_volume:,}"
     await ctx.send(s_volume)
 
-@client.command()
-async def rank(ctx):
-    await ctx.send(RANK)
-
 @tasks.loop(seconds=240)
 async def ExtractCoinMarketCap():
-    global PRICE, VOLUME, RANK
+    global PRICE, VOLUME
     try:
         response = requests.get(
             MM_CMC_URL,
@@ -169,7 +164,6 @@ async def ExtractCoinMarketCap():
         data = json.loads(response.text)
         PRICE = data['data']['10866']['quote']['USD']['price']
         VOLUME = data['data']['10866']['quote']['USD']['volume_24h']
-        RANK = data['data']['10866']['cmc_rank']
     except Exception as e:
         print("ERROR ExtractCoinMarketCap:\n\t", e)
 
