@@ -130,7 +130,7 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
    await client.get_channel(CHANNEL_WELCOME).send(
-        f"Ehy {member.mention} welcome to Million Token!")
+        f"Ehy {member.mention} welcome to Million Token, say something about you on #930398400262856754!")
 
 @client.event
 async def on_member_remove(member):
