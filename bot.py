@@ -34,7 +34,6 @@ CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
 CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
 CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
 CHANNEL_INTRO = int(os.getenv('CHANNEL_INTRO'))
-TL_EMOJIS = json.loads(os.getenv('TL_EMOJIS'))
 MM_EMOJIS = json.loads(os.getenv('MM_EMOJIS'))
 
 COVALENT_DICT = [
@@ -75,34 +74,6 @@ COVALENT_DICT = [
     },
 ]
 
-
-EMOJIS_DICT = [
-    {
-        "category": "techlead",
-        "custom": True, 
-        "keywords": [' TL', 'TL ', 'tl ', 'techlead', 'patrik'],
-        "ids": TL_EMOJIS
-    },
-    {
-        "category": "million",
-        "custom": True,
-        "keywords": ['million', ' MM', 'MM ', 'mm ', ' mm'],
-        "ids": MM_EMOJIS
-    },
-    {
-        "category": "lfg",
-        "custom": False,
-        "keywords": ['lfg', 'LFG'],
-        "ids": ['🇱', '🇫', '🇬']
-    },
-    {
-        "category": "moon",
-        "custom": False,
-        "keywords": ['moon'],
-        "ids": ['🇲', '🇴', '🅾️', '🇳', '🌝'],
-    }
-]
-
 # GLOABL VARIABLES
 PRICE = 0
 VOLUME = 0
@@ -131,16 +102,6 @@ async def on_ready():
     ExtractHoldersSolana.start()
     UpdateHolders.start()
     UpdateHoldersTotal.start()
-
-@client.event
-async def on_member_join(member):
-   await client.get_channel(CHANNEL_WELCOME).send(
-        f"Ehy {member.mention} welcome to Million Token, say something about you on <#{CHANNEL_INTRO}>!")
-
-@client.event
-async def on_member_remove(member):
-   await client.get_channel(CHANNEL_GOODBYE).send(
-        f"{member.name} has left")
 
 @client.command()
 async def price(ctx):
