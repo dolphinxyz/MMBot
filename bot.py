@@ -153,6 +153,7 @@ async def ExtractHolders():
 
 @tasks.loop(seconds=200)
 async def ExtractHoldersSolana():
+    global HOLDERS_SOL
     try:
         response = requests.get(SOLSCAN_URL)
         data = json.loads(response.text)
