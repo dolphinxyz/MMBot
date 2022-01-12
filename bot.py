@@ -23,11 +23,13 @@ MM_CMC_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
 MM_CMC_PARAMS = {'slug':'million'}
 COVALENT_URL = os.getenv('COVALENT_URL')
 COVALENT_API_TOKEN = os.getenv('COVALENT_API_TOKEN')
+SOLSCAN_URL = os.getenv('SOLSCAN_URL')
 CHANNEL_HOLDERS_ETHEREUM = int(os.getenv('CHANNEL_HOLDERS_ETHEREUM'))
 CHANNEL_HOLDERS_POLYGON = int(os.getenv('CHANNEL_HOLDERS_POLYGON'))
 CHANNEL_HOLDERS_KUSAMA = int(os.getenv('CHANNEL_HOLDERS_KUSAMA'))
 CHANNEL_HOLDERS_AVALANCHE = int(os.getenv('CHANNEL_HOLDERS_AVALANCHE'))
 CHANNEL_HOLDERS_BINANCE = int(os.getenv('CHANNEL_HOLDERS_BINANCE'))
+CHANNEL_HOLDERS_SOLANA = int(os.getenv('CHANNEL_HOLDERS_SOLANA'))
 CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
 CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
 CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
@@ -106,6 +108,7 @@ PRICE = 0
 VOLUME = 0
 HOLDERS_ETH = 0
 HOLDERS_BSC = 0
+HOLDERS_SOL = 0
 HOLDERS_MATIC = 0
 HOLDERS_AVAX = 0
 HOLDERS_KSM = 0
@@ -125,6 +128,7 @@ async def on_ready():
     UpdateOnlineUserCounter.start()
     ExtractCoinMarketCap.start()
     ExtractHolders.start()
+    ExtractHoldersSolana.start()
     UpdateHolders.start()
     UpdateHoldersTotal.start()
 
@@ -168,7 +172,7 @@ async def ExtractCoinMarketCap():
     except Exception as e:
         print("ERROR ExtractCoinMarketCap:\n\t", e)
 
-@tasks.loop(seconds=120)
+@tasks.loop(seconds=200)
 async def ExtractHolders():
     for i in COVALENT_DICT:
         try:
@@ -186,7 +190,18 @@ async def ExtractHolders():
         except Exception as e:
             print("ERROR ExtractHolders:\n\t", i['chain'], e)
 
-@tasks.loop(seconds=120)
+@tasks.loop(seconds=200)
+async def ExtractHoldersSolana():
+    for i in COVALENT_DICT:
+        try:
+            response = requests.get(SOLSCAN_URL)
+            data = json.loads(response.text)
+            holder = data['holder']
+            HOLDERS_SOL = holder
+        except Exception as e:
+            print("ERROR ExtractHoldersSolana:\n\t", e)
+
+@tasks.loop(seconds=200)
 async def UpdateHolders():
     for i in COVALENT_DICT:
         channel = client.get_channel(i['channelid'])
@@ -198,6 +213,7 @@ async def UpdateHoldersTotal():
     total = 0
     for i in COVALENT_DICT:
         total = total + i['holders']
+    total = total + HOLDERS_SOL
     channel_total = client.get_channel(CHANNEL_HOLDERS_TOTAL)
     output_total = str(total)
     await channel_total.edit(name=output_total)
