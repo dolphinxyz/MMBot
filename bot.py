@@ -192,14 +192,16 @@ async def ExtractHolders():
 
 @tasks.loop(seconds=200)
 async def ExtractHoldersSolana():
-    for i in COVALENT_DICT:
-        try:
-            response = requests.get(SOLSCAN_URL)
-            data = json.loads(response.text)
-            holder = data['holder']
-            HOLDERS_SOL = holder
-        except Exception as e:
-            print("ERROR ExtractHoldersSolana:\n\t", e)
+    try:
+        response = requests.get(SOLSCAN_URL)
+        data = json.loads(response.text)
+        holder = data['holder']
+        HOLDERS_SOL = holder
+        channel = client.get_channel(CHANNEL_HOLDERS_SOLANA)
+        output = str(HOLDERS_SOL) + ' SOL'
+        await channel.edit(name=output)
+    except Exception as e:
+        print("ERROR ExtractHoldersSolana:\n\t", e)
 
 @tasks.loop(seconds=200)
 async def UpdateHolders():
