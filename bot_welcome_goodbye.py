@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 # ENVIRONMENTAL VARIABLES
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
+CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
 
 intents = discord.Intents.all()
 client = commands.Bot(
