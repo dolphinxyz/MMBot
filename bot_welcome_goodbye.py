@@ -11,6 +11,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_INTRO = int(os.getenv('CHANNEL_INTRO'))
 CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
 CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
+CHANNEL_ROLES = int(os.getenv('CHANNEL_ROLES'))
 
 intents = discord.Intents.all()
 client = commands.Bot(
@@ -21,7 +22,9 @@ client = commands.Bot(
 @client.event
 async def on_member_join(member):
    await client.get_channel(CHANNEL_WELCOME).send(
-        f"Ehy {member.mention} welcome to Million Token, say something about you on <#{CHANNEL_INTRO}>!")
+        f"""Ehy {member.mention} welcome to Million Token,
+        say something cool about you on <#{CHANNEL_INTRO}>
+        and add some fancy roles to you on <#{CHANNEL_ROLES}>!""")
 
 @client.event
 async def on_member_remove(member):
