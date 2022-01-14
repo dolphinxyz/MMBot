@@ -22,8 +22,8 @@ client = commands.Bot(
 @client.event
 async def on_member_join(member):
    await client.get_channel(CHANNEL_WELCOME).send(
-        f"""Ehy {member.mention} welcome to Million Token,
-        say something cool about you on <#{CHANNEL_INTRO}>
+        f"""Ehy {member.mention} welcome to Million Token,\n
+        say something cool about you on <#{CHANNEL_INTRO}>\n
         and add some fancy roles to you on <#{CHANNEL_ROLES}>!""")
 
 @client.event
