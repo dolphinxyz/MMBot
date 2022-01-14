@@ -9,8 +9,8 @@ import requests
 from dotenv import load_dotenv
 from discord.ext import tasks, commands
 
-# ENVIRONMENTAL VARIABLES
 load_dotenv()
+
 TOKEN = os.getenv('DISCORD_TOKEN')
 TOKEN_TEST = os.getenv('DISCORD_TOKEN_TEST')
 COINMARKETCAP_TOKEN = os.getenv('COINMARKETCAP_TOKEN')
@@ -34,7 +34,23 @@ CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
 CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
 CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
 CHANNEL_INTRO = int(os.getenv('CHANNEL_INTRO'))
+CHANNEL_YOUTUBE_VIEWS_COUNT = int(os.getenv('CHANNEL_YOUTUBE_VIEWS_COUNT'))
+CHANNEL_YOUTUBE_VIDEOS_COUNT = int(os.getenv('CHANNEL_YOUTUBE_VIDEOS_COUNT'))
+CHANNEL_YOUTUBE_SUBSCRIBERS_COUNT = int(os.getenv('CHANNEL_YOUTUBE_SUBSCRIBERS_COUNT'))
 MM_EMOJIS = json.loads(os.getenv('MM_EMOJIS'))
+YOUTUBE_API_TOKEN = os.getenv('YOUTUBE_API_TOKEN')
+YOUTUBE_TL_CHANNEL_ID = 'UC4xKdmAXFh4ACyhpiQ_3qBw'
+YOUTUBE_API_ENDPOINT="https://youtube.googleapis.com/youtube/v3/channels?part=statistics&id={}&key={}"
+
+PRICE = 0
+VOLUME = 0
+HOLDERS_ETH = 0
+HOLDERS_BSC = 0
+HOLDERS_SOL = 0
+HOLDERS_MATIC = 0
+HOLDERS_AVAX = 0
+HOLDERS_KSM = 0
+HOLDERS_TOTAL = 0
 
 COVALENT_DICT = [
     {
@@ -74,17 +90,6 @@ COVALENT_DICT = [
     },
 ]
 
-# GLOABL VARIABLES
-PRICE = 0
-VOLUME = 0
-HOLDERS_ETH = 0
-HOLDERS_BSC = 0
-HOLDERS_SOL = 0
-HOLDERS_MATIC = 0
-HOLDERS_AVAX = 0
-HOLDERS_KSM = 0
-HOLDERS_TOTAL = 0
-
 intents = discord.Intents.all()
 client = commands.Bot(
     command_prefix = '!', 
@@ -102,6 +107,7 @@ async def on_ready():
     ExtractHoldersSolana.start()
     UpdateHolders.start()
     UpdateHoldersTotal.start()
+    ExtractYoutubeData.start()
 
 @client.command()
 async def price(ctx):
@@ -216,6 +222,34 @@ async def ChangeChannelNameDays():
     delta_days = today - genesis
     s_days = str(delta_days.days) + ' DAYS'
     await channel_days.edit(name=s_days)
+
+@tasks.loop(seconds=300)
+async def ExtractYoutubeData():
+    try:
+        url = YOUTUBE_API_ENDPOINT.format(
+            YOUTUBE_TL_CHANNEL_ID,
+            YOUTUBE_API_TOKEN
+        )
+        response = requests.get(url)
+        data = json.loads(response.text)
+        stats = data["items"][0]["statistics"]
+        view_counts = int(stats["viewCount"])
+        view_counts = f"{view_counts:,}"
+        subscriber_count = int(stats["subscriberCount"])
+        subscriber_count = f"{subscriber_count:,}"
+        video_count = int(stats["videoCount"])
+        video_count = f"{video_count:,}"
+        channel_view = client.get_channel(CHANNEL_YOUTUBE_VIEWS_COUNT)
+        channel_subscribers = client.get_channel(CHANNEL_YOUTUBE_SUBSCRIBERS_COUNT)
+        channel_video = client.get_channel(CHANNEL_YOUTUBE_VIDEOS_COUNT)
+        output_view = str(view_counts) + ' VIEWS'
+        output_subs = str(subscriber_count) + ' SUBS'
+        output_videos = str(video_count) + ' VIDEOS'
+        await channel_view.edit(name=output_view)
+        await channel_subscribers.edit(name=output_subs)
+        await channel_video.edit(name=output_videos)
+    except Exception as e:
+        print("ERROR ExtractYoutubeData:\n\t", e)
 
 if __name__ == "__main__":
     mode = sys.argv[1]
