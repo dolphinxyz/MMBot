@@ -30,6 +30,7 @@ CHANNEL_HOLDERS_KUSAMA = int(os.getenv('CHANNEL_HOLDERS_KUSAMA'))
 CHANNEL_HOLDERS_AVALANCHE = int(os.getenv('CHANNEL_HOLDERS_AVALANCHE'))
 CHANNEL_HOLDERS_BINANCE = int(os.getenv('CHANNEL_HOLDERS_BINANCE'))
 CHANNEL_HOLDERS_SOLANA = int(os.getenv('CHANNEL_HOLDERS_SOLANA'))
+CHANNEL_HOLDERS_FANTOM = int(os.getenv('CHANNEL_HOLDERS_FANTOM'))
 CHANNEL_HOLDERS_TOTAL = int(os.getenv('CHANNEL_HOLDERS_TOTAL'))
 CHANNEL_WELCOME = int(os.getenv('CHANNEL_WELCOME'))
 CHANNEL_GOODBYE = int(os.getenv('CHANNEL_GOODBYE'))
@@ -80,6 +81,13 @@ COVALENT_DICT = [
         "contract": '0x993163CaD35162fB579D7B64e6695cB076EF5064',
         "holders": 0,
         "channelid": CHANNEL_HOLDERS_AVALANCHE
+    },
+    {
+        "chain": "FANTOM",
+        "chainid": 250,
+        "contract": '0xf1b9c667a53a800b48b55b14f7612d2638607288',
+        "holders": 0,
+        "channelid": CHANNEL_HOLDERS_FANTOM
     },
     {
         "chain": "KSM",
