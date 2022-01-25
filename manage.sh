@@ -13,3 +13,6 @@ nohup python3 bot_reactions.py prod > output_reactions.log &
 
 echo "running bot_welcome_goodbye.py"
 nohup python3 bot_welcome_goodbye.py prod > output_welcome_goodbye.log &
+
+echo "printing processes..."
+ps ax | grep "python3 bot_*"
