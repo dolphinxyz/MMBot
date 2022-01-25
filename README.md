@@ -1,13 +1,6 @@
 # Python Bot
 
-```shell
-cd /home/discord/MMBot
-git reset --hard HEAD && git pull
-ps ax | grep "python3 bot*
-kill -9 <process_id>
-nohup python3 bot.py prod > output.log &
-nohup python3 bot_reactions.py prod > output_reactions.log &
-```
+Follow the shell script to know how to manage the scripts
 
 # Golang Bot
 ```shell
