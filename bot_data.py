@@ -129,7 +129,7 @@ async def volume(ctx):
     s_volume = f"${r_volume:,}"
     await ctx.send(s_volume)
 
-@tasks.loop(seconds=240)
+@tasks.loop(seconds=300)
 async def ExtractCoinMarketCap():
     global PRICE, VOLUME
     try:
