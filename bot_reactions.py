@@ -16,8 +16,6 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 TOKEN_TEST = os.getenv('DISCORD_TOKEN_TEST')
 TL_EMOJIS = json.loads(os.getenv('TL_EMOJIS'))
 MM_EMOJIS = json.loads(os.getenv('MM_EMOJIS'))
-BTC_EMOJIS = json.loads(os.getenv('BTC_EMOJIS'))
-ETH_EMOJIS = json.loads(os.getenv('ETH_EMOJIS'))
 
 EMOJIS_DICT = [
     {
@@ -31,18 +29,6 @@ EMOJIS_DICT = [
         "custom": True,
         "keywords": ['million', ' MM', 'MM ', 'mm ', ' mm'],
         "ids": MM_EMOJIS
-    },
-    {
-        "category": "bitcoin",
-        "custom": True,
-        "keywords": ['btc', 'BTC', 'Bitcoin', 'bitcoin', 'BITCOIN'],
-        "ids": BTC_EMOJIS
-    },
-    {
-        "category": "ethereum",
-        "custom": True,
-        "keywords": ['eth', 'ETH', 'Ethereum', 'ethereum', 'ETHEREUM'],
-        "ids": ETH_EMOJIS
     },
     {
         "category": "lfg",
