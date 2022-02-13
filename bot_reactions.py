@@ -19,12 +19,6 @@ MM_EMOJIS = json.loads(os.getenv('MM_EMOJIS'))
 
 EMOJIS_DICT = [
     {
-        "category": "techlead",
-        "custom": True, 
-        "keywords": [' TL', 'TL ', 'tl ', 'techlead', 'patrik'],
-        "ids": TL_EMOJIS
-    },
-    {
         "category": "million",
         "custom": True,
         "keywords": ['million', ' MM', 'MM ', 'mm ', ' mm'],
